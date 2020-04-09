@@ -70,7 +70,9 @@ class SEORequestProcessor implements HTTPMiddleware {
          * @var $response HTTPResponse
          */
 		$response = $delegate($request);
-		$headers = $response->getHeaders();
+		if ($response) {
+            $headers = $response->getHeaders();
+        }
 		if($response
             && ($body = $response->getbody())
             && $this->canAddSEOScripts($request, $response)) {
@@ -83,7 +85,12 @@ class SEORequestProcessor implements HTTPMiddleware {
 	private function canAddSEOScripts(HTTPRequest $request, HTTPResponse $response)
     {
         $url = ltrim($request->getURL(), '/');
-        $headers = $response->getHeaders();
+
+        if ($response) {
+            $headers = $response->getHeaders();
+        } else {
+            $headers = [];
+        }
 
         $rules = self::config()->get('exclude_rules');
         if (count($rules)) {
